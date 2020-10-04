@@ -1,0 +1,88 @@
+[
+  {
+    "basename": "MVIMG_20200901_220826.jpg",
+    "thumbnail_name": "MVIMG_20200901_220826.jpg",
+    "caption": "All my gear",
+    "tags": [],
+    "rating": 5,
+    "type": "image",
+    "ts": "2020-09-01T22:08:26",
+    "lat": 30.334305555555556,
+    "lon": -97.70776388888889,
+    "elevation": 665.6824146981628
+  },
+  {
+    "basename": "IMG_20200903_145702.jpg",
+    "thumbnail_name": "IMG_20200903_145702.jpg",
+    "caption": "One of our first views of Pecos Baldy, the summit that was our first loose destination.",
+    "tags": [],
+    "rating": 5,
+    "type": "image",
+    "ts": "2020-09-03T14:57:02",
+    "lat": 35.8432,
+    "lon": -105.71962222222223,
+    "elevation": 10190.616797900262
+  },
+  {
+    "basename": "PANO_20200904_150347.vr.jpg",
+    "thumbnail_name": "PANO_20200904_150347.vr.jpg",
+    "caption": "We reached this nice spot, a sort of meadow in the pass, also a junction with trails leading up to the Pecos Baldy summit, and down to Pecos Baldy lake. This is one of my favorite panoramas. We spotted signs of a landslide heading down toward the lake.",
+    "tags": [],
+    "rating": 5,
+    "type": "image",
+    "ts": "2020-09-04T15:03:47",
+    "lat": 35.909375,
+    "lon": -105.65138611111112,
+    "elevation": 11801.181102362205
+  },
+  {
+      "basename": "VID_20200904_191306.mp4",
+      "thumbnail_name": "VID_20200904_191306.jpeg",
+      "poster_name": "VID_20200904_191306.jpeg",
+      "caption": "Cody throwing a bear bag line",
+      "tags": [],
+      "rating": 5,
+      "type": "video",
+      "ts": "2020-09-04T19:13:06",
+      "lat": 35.910202777777776,
+      "lon": -105.64673333333334,
+      "elevation": -1
+  },
+  {
+      "basename": "MVIMG_20200904_203833.jpg",
+      "thumbnail_name": "MVIMG_20200904_203833.jpg",
+      "caption": "Our second bear bag attempt went much better, we tried the PCT method, which only requires throwing a line over a single branch, as long as it's sufficiently high/long/sturdy. We got much more height this time.",
+      "tags": [],
+      "rating": 5,
+      "type": "image",
+      "ts": "2020-09-04T20:38:33",
+      "lat": 35.910202777777776,
+      "lon": -105.64673333333334,
+      "elevation": -1
+  },
+  {
+      "basename": "IMG_20200905_122711.gif",
+      "thumbnail_name": "MVIMG_20200905_122711.jpg",
+      "caption": "Cody messing with his phone to prop it up.",
+      "tags": [],
+      "rating": 5,
+      "type": "image",
+      "ts": "2020-09-05T12:27:11",
+      "lat": 35.95578888888889,
+      "lon": -105.64044166666667,
+      "elevation": 11791.666666666666
+  },
+  {
+    "basename": "IMG_1165.jpeg",
+    "thumbnail_name": "IMG_1165.jpeg",
+    "caption": "That one nicely framed and posed picture I always hope to get on a hike.",
+    "tags": [],
+    "rating": 1,
+    "type": "image",
+    "ts": "2020-09-05T12:35:50",
+    "lat": 35.95578888888889,
+    "lon": -105.64044166666667,
+    "elevation": 11791.666666666666,
+    "error": "no GPS"
+  }
+]

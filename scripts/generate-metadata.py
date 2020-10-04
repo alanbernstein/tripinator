@@ -10,11 +10,13 @@ from panda.debug import pm, debug, pp
 
 m2ft = 100./2.54/12
 
+# TODO: put thumbnail filename in metadata explicitly
+
 @pm
 def main():
     metadata = []
     base_md = {
-        'comment': '',
+        'caption': '',
         'tags': [],
         'rating': 5,
     }
