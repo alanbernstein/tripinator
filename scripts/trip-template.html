@@ -1,0 +1,25 @@
+<!-- videos -->
+<!-- https://github.com/sachinchoolur/lightGallery/issues/485  -->
+
+{%- for item in videos %}
+<div style="display:none;" id="video{{ item.video_id }}">
+    <video class="lg-video-object lg-html5" controls preload="none">
+        <source src="video/{{ item.basename }}" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+</div>
+{%- endfor %}
+
+<!-- images  -->
+{%- for item in metadata %}
+  {%- if item.type == "image" %}
+    <a href="img/{{ item.basename }}"  data-sub-html="{{ item.comment }}" class="p1" id="slide{{ loop.index-1 }}" data-lat="{{ item.lat }}" data-lon="{{ item.lon }}">
+      <img src="img-thumb/{{ item.basename }}">
+    </a>
+    {%- elif item.type == "video" %}
+    <!-- extension wrong here -->
+    <a data-poster="video-poster/{{ item.basename }}.png" data-sub-html="video caption1" data-html="#video1" class="v1"  id="slide{{ item.video_id }}" data-lat="" data-lon="">
+      <img src="video-poster/{{ item.basename }}.png" />
+    </a>
+  {%- endif %}
+{%- endfor %}
