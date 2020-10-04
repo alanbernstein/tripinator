@@ -1,0 +1,275 @@
+<meta charset="UTF-8">
+<html>
+    <head>
+        <title>pecos wilderness 2020</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+        <!-- lightgallery -->
+        <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/css/lightgallery.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/js/lightgallery.min.js"></script>
+
+        <!-- lightgallery plugins -->
+        <script src="../js/lg-thumbnail.js"></script>
+        <script src="../js/lg-fullscreen.js"></script>
+        <script src="../js/lg-video.js"></script>
+        <script src="../js/lg-autoplay.js"></script>
+        <script src="../js/lg-hash.js"></script>
+        <script src="../js/lg-zoom.js"></script>
+
+        <!-- video player -->
+        <link href="http://vjs.zencdn.net/4.12/video-js.css" rel="stylesheet">
+        <script src="http://vjs.zencdn.net/4.12/video.js"></script>
+
+        <!-- leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+              integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+              crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+                integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+                crossorigin=""></script>
+
+        <style type="text/css">
+         body {
+             background-color: #222;
+         }
+         .p1 {
+         }
+         .p2 {
+             display: none;
+         }
+         .v1 {
+         }
+         .v2 {
+         }
+         #hidden {
+             display: none;
+         }
+         #mapid {
+             height: 400px;
+             width: 300px;
+             border-radius: 10px;
+             border: 1px gray solid;
+             position: absolute;
+             top: 50px;
+             left: 0;
+             opacity: 100%;
+             z-index: 1100;
+         }
+        </style>
+
+    </head>
+    <body>
+
+        <!-- video content -->
+        <div style="display:none;" id="video1">
+            <video class="lg-video-object lg-html5" controls preload="none">
+                <source src="video/VID_20200904_191306.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+
+        <!-- slides -->
+        <div id="lightgallery">
+            <a href="img/MVIMG_20200901_220826.jpg"  data-sub-html="All my gear" class="p1" id="slide0" data-lat="30.334305555555556" data-lon="-97.70776388888889">
+                <img src="img-thumb/MVIMG_20200901_220826.jpg">
+            </a>
+            <a href="img/IMG_20200903_145702.jpg"  data-sub-html="One of our first views of Pecos Baldy, the summit that was our first loose destination." class="p1" id="slide1" data-lat="35.8432" data-lon="-105.71962222222223">
+                <img src="img-thumb/IMG_20200903_145702.jpg">
+            </a>
+            <a href="img/PANO_20200904_150347.vr.jpg"  data-sub-html="We reached this nice spot, a sort of meadow in the pass, also a junction with trails leading up to the Pecos Baldy summit, and down to Pecos Baldy lake. This is one of my favorite panoramas. We spotted signs of a landslide heading down toward the lake." class="p1" id="slide2" data-lat="35.909375" data-lon="-105.65138611111112">
+                <img src="img-thumb/PANO_20200904_150347.vr.jpg">
+            </a>
+            <a data-poster="video-poster/VID_20200904_191306.jpeg" data-sub-html="cody throwing a bear bag line" data-html="#video1" class="v1" id="slide3" data-lat="35.910202777777776" data-lon="-105.64673333333334">
+                <img src="video-poster/VID_20200904_191306.jpeg" />
+            </a>
+            <a href="img/MVIMG_20200904_203833.jpg"  data-sub-html="Our second bear bag attempt went much better, we tried the PCT method, which only requires throwing a line over a single branch, as long as it's sufficiently high/long/sturdy. We got much more height this time." class="p1" id="slide4" data-lat="35.910202777777776" data-lon="-105.64673333333334">
+                <img src="img-thumb/MVIMG_20200904_203833.jpg">
+            </a>
+            <a href="img/IMG_20200905_122711.gif"  data-sub-html="Cody messing with his phone to prop it up." class="p1" id="slide5" data-lat="35.95578888888889" data-lon="-105.64044166666667">
+                <img src="img-thumb/MVIMG_20200905_122711.jpg">
+            </a>
+            <a href="img/IMG_1165.jpeg"  data-sub-html="That one nicely framed and posed picture I always hope to get on a hike." class="p1" id="slide6" data-lat="35.95578888888889" data-lon="-105.64044166666667">
+                <img src="img-thumb/IMG_1165.jpeg">
+            </a>
+        </div>
+
+        <div id="mapid"></div>
+
+        <script type="text/javascript">
+         // TODO load from server
+         tracks=[];
+        </script>
+        <script src="../js/2020-09-03-pecos.js"></script>
+        <script src="../js/2020-09-04-pecos.js"></script>
+        <script src="../js/2020-09-05-pecos.js"></script>
+        <script src="../js/2020-09-06-pecos.js"></script>
+
+
+        <script type="text/javascript">
+         mapboxAccessToken = '';
+         mapCenter = [35.897745, -105.640541];
+
+         // define a bunch of stuff
+
+         // tableau-10 color palette
+         tab10 = [
+             "#1f77b4",
+             "#ff7f0e",
+             "#2ca02c",
+             "#d62728",
+             "#9467bd",
+             "#8c564b",
+             "#e377c2",
+             "#7f7f7f",
+             "#bcbd22",
+             "#17becf",
+         ]
+
+         a1 = [16, 16];
+         a2 = [0, 0];
+         var tentIcon = L.icon({
+             iconUrl: '../icons/campground.png',
+             iconSize:     [107/3.2, 79/3.2],
+             iconAnchor:   a1,
+             popupAnchor:  a2
+         });
+
+         var hikeIcon = L.icon({
+             iconUrl: '../icons/hiker.png',
+             iconSize:     [107/4, 133/4],
+             iconAnchor:   a1,
+             popupAnchor:  a2
+         });
+
+         var foodIcon = L.icon({
+             iconUrl: '../icons/spork.png',
+             iconSize:     [107/4, 133/4],
+             iconAnchor:   a1,
+             popupAnchor:  a2
+         });
+
+         var summitIcon = L.icon({
+             iconUrl: '../icons/summit.png',
+             iconSize:     [533/20, 667/20],
+             iconAnchor:   a1,
+             popupAnchor:  a2
+         });
+
+         var currentIcon = L.icon({
+             iconUrl: '../icons/alan-face.png',
+             iconSize:     [5*5, 7*5],
+             iconAnchor:   a1,
+             popupAnchor:  a2
+         });
+
+
+         // TODO load from waypoint file
+         waypoints = {
+             "camp 0": [[35.814792, -105.670060], tentIcon],  // ?
+             "trailhead": [[35.81277, -105.66092], hikeIcon],
+             "lunch 1": [[35.83125, -105.72095], foodIcon],
+             "camp 1": [[35.87695, -105.70863], tentIcon],
+             "east pecos baldy summit": [[35.91300, -105.6541], summitIcon],
+             // "pecos baldy summit": [[35.90892, -105.66613], 0],
+             "camp 2": [[35.91035, -105.64640], tentIcon],
+             "camp 3": [[35.96990, -105.63369], tentIcon],
+             "lunch 4": [[35.90507, -105.59866], foodIcon],
+             "camp 4": [[35.686963, -105.692711], tentIcon], // ?
+         };
+
+
+         // TODO: videos
+         // TODO: end-to-end automation
+         // TODO: elevation inset with profile, current slide location
+         // TODO: UI to filter out videos, pic categories, etc (doesnt work by simply hiding the <a>'s - maybe i can move them to/from a different div somehow?)
+         // TODO: better design - map not an overlay, or hideable, or something
+         // TODO: open gallery on page load
+         // TODO: interpolate location from timestamp if necessary
+
+         // DONE: generate the main data
+         // DONE: map inset with tracks, waypoints, and current slide location
+         // DONE: better icons
+         // DONE: image-specific anchor links
+
+         $(document).ready(function() {
+             $("#lightgallery").lightGallery({
+                 thumbnail: true,
+                 animateThumb: true,
+                 showThumbByDefault: true,
+                 videojs: true
+             });
+         });
+
+         var map = L.map('mapid', {
+             keyboard: false,
+         }).setView(mapCenter, 12);
+
+         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+             maxZoom: 18,
+             id: 'mapbox/satellite-v9',
+             accessToken: mapboxAccessToken,
+         }).addTo(map);
+
+
+         var circle = L.circle([35.906096, -105.598263], {
+             color: 'red',
+             fillColor: '#f03',
+             fillOpacity: 0.5,
+             radius: 1600
+         }).addTo(map);
+         circle.bindPopup("camp closure area that<br>screwed up our plan A");
+
+         for (var title in waypoints) {
+             icon = waypoints[title][1]
+             //console.log(icon)
+             var marker = L.marker(waypoints[title][0], {icon: icon}).addTo(map);
+             marker.bindPopup(title);
+         }
+
+         var currentLocMarker = L.marker(waypoints["trailhead"][0], {icon: currentIcon}).addTo(map);
+         currentLocMarker.bindPopup("current photo");
+
+         for(n=0; n<tracks.length; n++) {
+             L.geoJson(tracks[n], {style: {color: tab10[n], weight: 3, opacity: 1}}).addTo(map);
+         }
+
+         function updateMapInset(lat, lon) {
+             currentLocMarker.setLatLng([lat, lon]);
+
+             // center map on this point, but only if it's not already close to the center
+             bounds = map.getBounds();
+             // center = map.getCenter();
+             xnorm = (lon - bounds._northEast["lng"])/(bounds._southWest["lng"] - bounds._northEast["lng"])
+             ynorm = (lat - bounds._southWest["lat"])/(bounds._northEast["lat"] - bounds._southWest["lat"])
+             if (xnorm < .25 || xnorm > .75 || ynorm < .25 || ynorm > .75) {
+                 map.flyTo([lat, lon], map.getZoom());
+             }
+
+         }
+
+         updateMapInset(35.822, -105.69);
+
+
+         // attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+         // Campground by Vicons Design from the Noun Project
+         // Spork by Matt Garbarino from the Noun Project
+
+         $("#lightgallery").on('onBeforeSlide.lg', function(event, prevIndex, index){
+             //$('.lg-outer').css('background-color', colours[index])
+             console.log(event, prevIndex, index)
+             slide=$("#slide" + index)[0]
+             console.log(slide)
+             lat = parseFloat(slide.attributes["data-lat"].value)
+             lon = parseFloat(slide.attributes["data-lon"].value)
+             console.log(slide, lat, lon)
+             updateMapInset(lat, lon)
+         });
+
+         $("#lightgallery").on('onAfterOpen.lg',function(event, index, fromTouch, fromThumb){
+             console.log("onAfterOpen")
+         });
+
+        </script>
+    </body>
+</html>

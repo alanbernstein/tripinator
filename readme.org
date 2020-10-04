@@ -1,27 +1,37 @@
 * process
 
-- select photos
-- fuck with the timestamps until everything is chronological
-- create thumbnails
-- generate-metadata.py
-- add comments to metadata.json
-- generate-html.py
-  - copy results into corresponding index.html file
+1. ~mkdir my-trip && mkdir my-trip/{img,img-thumb,video,video-poster,tracks}~
+2. get photos in order
+   - copy photos into ~my-trip/img~
+   - ensure all photo timestamps and/or timestamp filenames are correct. 
+     - try ~scripts/exiftouch.sh~, but be sure to check that the exif tag its using exists, and contains good data.
+     - if using photos from multiple devices, check exif key/value for each device, each app, and each media type (e.g. still photo, motion photo, panorama, HDR, ... and videos and gifs)
+     - lots of notes on how fucked up this is in ~scripts/generate-metadata.py~.
+   - ensure all photo geotags are present (TODO don't require this)
+   - use ~convert~ to generate thumbnails
+     - ~for f in *.jpg ; do convert $f -resize 5% ../thumb/$f ; done~
+3. get videos in order
+   - copy videos into ~my-trip/video~
+   - ensure all video timestamps and/or timestamp filenames are correct
+   - ensure all video geotags are present (TODO don't require this)
+   - use ~ffmpeg~ to generate "posters" which double as thumbnails
+     - by frame: ~ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg~
+     - by timestamp: ~ffmpeg -i VID_20200902_193614.mp4 -ss 00:09 VID_20200902_193614.jpeg~
+4. run ~scripts/generate-metadata.py~
+   - update/add new device-specific sections to the ~get_details~ function (TODO: switch behavior based on hardware name in exif tag - possibly unreliable)
+5. add comments to the metadata file (TODO pull from exif and/or load from a separate ~comments.csv~ file or something)
+6. run ~scripts/generate-html.py~
+7. copy results into the appropriate place in ~my-trip/index.html~ (TODO add the complete html to the template... split out the js and css)
 
+also:
+- add any new icons
+- add waypoints file
+  - TODO: load waypoint file from server
+  - TODO: associate waypoints with icons in waypoint file?
+- copy track GeoJSON files to ~js/~
+  - TODO: copy track GeoJSON files to ~my-trip/tracks~, load those from server
 
 * data munging commands
-
-extract a frame from a video (by frame number)
-
-~ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg~
-
-extract a frame from a video (by timestamp)
-
-~ffmpeg -i VID_20200902_193614.mp4 -ss 00:09 VID_20200902_193614.jpeg~
-
-create thumbnail of static image
-
-~for f in *.jpg ; do convert $f -resize 5% ../thumb/$f ; done~
 
 convert gpx to geojson
 
