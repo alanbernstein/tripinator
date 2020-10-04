@@ -1,6 +1,6 @@
 * process
 
-1. ~mkdir my-trip && mkdir my-trip/{img,img-thumb,video,video-poster,tracks}~
+1. ~mkdir my-trip && mkdir my-trip/{img,img-thumb,video,video-poster,video-thumb,gps}~
 2. get photos in order
    - copy photos into ~my-trip/img~
    - ensure all photo timestamps and/or timestamp filenames are correct. 
@@ -14,22 +14,22 @@
    - copy videos into ~my-trip/video~
    - ensure all video timestamps and/or timestamp filenames are correct
    - ensure all video geotags are present (TODO don't require this)
-   - use ~ffmpeg~ to generate "posters" which double as thumbnails
+   - use ~ffmpeg~ to generate "posters"
      - by frame: ~ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg~
      - by timestamp: ~ffmpeg -i VID_20200902_193614.mp4 -ss 00:09 VID_20200902_193614.jpeg~
+   - use ~convert~ to generate thumbnails from the posters
 4. run ~scripts/generate-metadata.py~
    - update/add new device-specific sections to the ~get_details~ function (TODO: switch behavior based on hardware name in exif tag - possibly unreliable)
 5. add comments to the metadata file (TODO pull from exif and/or load from a separate ~comments.csv~ file or something)
 6. run ~scripts/generate-html.py~
-7. copy results into the appropriate place in ~my-trip/index.html~ (TODO add the complete html to the template... split out the js and css)
+7. move resulting file to ~my-trip/index.html~
 
 also:
 - add any new icons
-- add waypoints file
-  - TODO: load waypoint file from server
-  - TODO: associate waypoints with icons in waypoint file?
-- copy track GeoJSON files to ~js/~
-  - TODO: copy track GeoJSON files to ~my-trip/tracks~, load those from server
+- add waypoints file and annotations file
+  - TODO: move to GeoJSON and load from server? might not make sense, not sure if all the data these need to contain make sense to put into GeoJSON
+- copy track GeoJSON *contents* to ~my-trip/gps/tracks.js~
+  - TODO: load the GeoJSON files directly from the server
 
 * data munging commands
 

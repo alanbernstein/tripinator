@@ -7,10 +7,13 @@ import subprocess
 
 from panda.debug import pm, debug, pp
 
+# run this inside the `my-trip` directory
+
 
 m2ft = 100./2.54/12
 
-# TODO: put thumbnail filename in metadata explicitly
+# TODO: figure out thumbnail and poster filenames automatically, by checking the basename without the extension
+
 
 @pm
 def main():
@@ -21,7 +24,7 @@ def main():
         'rating': 5,
     }
 
-    for n, f in enumerate(glob.glob('../pecos-2020/img/*')):
+    for n, f in enumerate(glob.glob('img/*')):
         md = {'filename': f, 'basename': os.path.basename(f)}
         md.update(base_md)
         exif = get_exif_tags(f)

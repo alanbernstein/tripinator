@@ -1,6 +1,15 @@
 import jinja2
 import json
 
+# given:
+# - metadata json file produced by generate_metadata.py,
+# - title string
+# - template file
+#
+# this should generate a complete html file, which can then
+# be copied into the appropriate trip directory (e.g. sample-trip)
+# and it will work as expected as long as all media and other assets
+# are present in the correct locations
 
 TEMPLATE_FILE = "trip-full-template.html"
 output_file = 'trip.html'
