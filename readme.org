@@ -1,0 +1,64 @@
+* process
+
+- select photos
+- fuck with the timestamps until everything is chronological
+- create thumbnails
+- generate-metadata.py
+- add comments to metadata.json
+- generate-html.py
+  - copy results into corresponding index.html file
+
+
+* data munging commands
+
+extract a frame from a video (frame 1 here)
+`ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg`
+
+create thumbnail of static image
+`for f in *.jpg ; do convert $f -resize 5% ../thumb/$f ; done`
+
+convert gpx to geojson
+`ogr2ogr -f GeoJSON pecos1.json Pecos_Wilderness_Backpacking_Day_1.gpx  tracks`
+
+convert svg icon to png with transparent background
+`convert -background none noun_summit_2674795.svg summit.png`
+
+
+
+* frontend tools
+
+research notes
+
+** photo gallery/slideshow
+
+*** lightgallery
+pretty straightforward except for a couple minor TODOs
+
+*** reveal.jsx
+UI is great, but just seems like it wasn't made for this
+
+https://stackoverflow.com/questions/20119488/how-to-embed-a-leaflet-map-into-a-reveal-js-presentation
+https://github.com/ralexrdz/reveals-leaflet/
+
+
+** mapping
+
+*** leaflet
+pretty straightforward
+
+https://blog.mastermaps.com/2012/08/showing-gps-tracks-with-leaflet.html
+
+**** more icons
+https://github.com/lvoogdt/Leaflet.awesome-markers
+
+*** google maps
+https://developers.google.com/maps/documentation/embed/get-started
+
+*** openlayers
+https://openlayers.org/
+
+didn't try because leaflet worked fine
+
+** plotting elevation??
+
+https://github.com/MrMufflon/Leaflet.Elevation
