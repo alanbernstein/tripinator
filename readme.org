@@ -13,23 +13,23 @@
 
 extract a frame from a video (by frame number)
 
-`ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg`
+~ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg~
 
 extract a frame from a video (by timestamp)
 
-`ffmpeg -i VID_20200902_193614.mp4 -ss 00:09 VID_20200902_193614.jpeg`
+~ffmpeg -i VID_20200902_193614.mp4 -ss 00:09 VID_20200902_193614.jpeg~
 
 create thumbnail of static image
 
-`for f in *.jpg ; do convert $f -resize 5% ../thumb/$f ; done`
+~for f in *.jpg ; do convert $f -resize 5% ../thumb/$f ; done~
 
 convert gpx to geojson
 
-`ogr2ogr -f GeoJSON pecos1.json Pecos_Wilderness_Backpacking_Day_1.gpx  tracks`
+~ogr2ogr -f GeoJSON pecos1.json Pecos_Wilderness_Backpacking_Day_1.gpx  tracks~
 
 convert svg icon to png with transparent background
 
-`convert -background none noun_summit_2674795.svg summit.png`
+~convert -background none noun_summit_2674795.svg summit.png~
 
 
 
