@@ -4,6 +4,7 @@
         <title>pecos wilderness 2020</title>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
+        <link type="text/css" rel="stylesheet" href="../css/main.css" />
         <!-- lightgallery -->
         <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/css/lightgallery.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/js/lightgallery.min.js"></script>
@@ -28,35 +29,6 @@
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
                 integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
                 crossorigin=""></script>
-
-        <style type="text/css">
-         body {
-             background-color: #222;
-         }
-         .p1 {
-         }
-         .p2 {
-             display: none;
-         }
-         .v1 {
-         }
-         .v2 {
-         }
-         #hidden {
-             display: none;
-         }
-         #mapid {
-             height: 400px;
-             width: 300px;
-             border-radius: 10px;
-             border: 1px gray solid;
-             position: absolute;
-             top: 50px;
-             left: 0;
-             opacity: 100%;
-             z-index: 1100;
-         }
-        </style>
 
     </head>
     <body>
@@ -96,180 +68,13 @@
 
         <div id="mapid"></div>
 
-        <script type="text/javascript">
-         // TODO load from server
-         tracks=[];
-        </script>
-        <script src="../js/2020-09-03-pecos.js"></script>
-        <script src="../js/2020-09-04-pecos.js"></script>
-        <script src="../js/2020-09-05-pecos.js"></script>
-        <script src="../js/2020-09-06-pecos.js"></script>
+        <script src="../js/colors.js"></script>
+        <script src="../js/icons.js"></script>
+        <script src="../js/secrets.js"></script>
+        <script src="gps/tracks.js"></script>
+        <script src="gps/waypoints.js"></script> <!-- depends on icons.js -->
+        <script src="gps/annotations.js"></script>
 
-
-        <script type="text/javascript">
-         mapboxAccessToken = '';
-         mapCenter = [35.897745, -105.640541];
-
-         // define a bunch of stuff
-
-         // tableau-10 color palette
-         tab10 = [
-             "#1f77b4",
-             "#ff7f0e",
-             "#2ca02c",
-             "#d62728",
-             "#9467bd",
-             "#8c564b",
-             "#e377c2",
-             "#7f7f7f",
-             "#bcbd22",
-             "#17becf",
-         ]
-
-         a1 = [16, 16];
-         a2 = [0, 0];
-         var tentIcon = L.icon({
-             iconUrl: '../icons/campground.png',
-             iconSize:     [107/3.2, 79/3.2],
-             iconAnchor:   a1,
-             popupAnchor:  a2
-         });
-
-         var hikeIcon = L.icon({
-             iconUrl: '../icons/hiker.png',
-             iconSize:     [107/4, 133/4],
-             iconAnchor:   a1,
-             popupAnchor:  a2
-         });
-
-         var foodIcon = L.icon({
-             iconUrl: '../icons/spork.png',
-             iconSize:     [107/4, 133/4],
-             iconAnchor:   a1,
-             popupAnchor:  a2
-         });
-
-         var summitIcon = L.icon({
-             iconUrl: '../icons/summit.png',
-             iconSize:     [533/20, 667/20],
-             iconAnchor:   a1,
-             popupAnchor:  a2
-         });
-
-         var currentIcon = L.icon({
-             iconUrl: '../icons/alan-face.png',
-             iconSize:     [5*5, 7*5],
-             iconAnchor:   a1,
-             popupAnchor:  a2
-         });
-
-
-         // TODO load from waypoint file
-         waypoints = {
-             "camp 0": [[35.814792, -105.670060], tentIcon],  // ?
-             "trailhead": [[35.81277, -105.66092], hikeIcon],
-             "lunch 1": [[35.83125, -105.72095], foodIcon],
-             "camp 1": [[35.87695, -105.70863], tentIcon],
-             "east pecos baldy summit": [[35.91300, -105.6541], summitIcon],
-             // "pecos baldy summit": [[35.90892, -105.66613], 0],
-             "camp 2": [[35.91035, -105.64640], tentIcon],
-             "camp 3": [[35.96990, -105.63369], tentIcon],
-             "lunch 4": [[35.90507, -105.59866], foodIcon],
-             "camp 4": [[35.686963, -105.692711], tentIcon], // ?
-         };
-
-
-         // TODO: videos
-         // TODO: end-to-end automation
-         // TODO: elevation inset with profile, current slide location
-         // TODO: UI to filter out videos, pic categories, etc (doesnt work by simply hiding the <a>'s - maybe i can move them to/from a different div somehow?)
-         // TODO: better design - map not an overlay, or hideable, or something
-         // TODO: open gallery on page load
-         // TODO: interpolate location from timestamp if necessary
-
-         // DONE: generate the main data
-         // DONE: map inset with tracks, waypoints, and current slide location
-         // DONE: better icons
-         // DONE: image-specific anchor links
-
-         $(document).ready(function() {
-             $("#lightgallery").lightGallery({
-                 thumbnail: true,
-                 animateThumb: true,
-                 showThumbByDefault: true,
-                 videojs: true
-             });
-         });
-
-         var map = L.map('mapid', {
-             keyboard: false,
-         }).setView(mapCenter, 12);
-
-         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-             maxZoom: 18,
-             id: 'mapbox/satellite-v9',
-             accessToken: mapboxAccessToken,
-         }).addTo(map);
-
-
-         var circle = L.circle([35.906096, -105.598263], {
-             color: 'red',
-             fillColor: '#f03',
-             fillOpacity: 0.5,
-             radius: 1600
-         }).addTo(map);
-         circle.bindPopup("camp closure area that<br>screwed up our plan A");
-
-         for (var title in waypoints) {
-             icon = waypoints[title][1]
-             //console.log(icon)
-             var marker = L.marker(waypoints[title][0], {icon: icon}).addTo(map);
-             marker.bindPopup(title);
-         }
-
-         var currentLocMarker = L.marker(waypoints["trailhead"][0], {icon: currentIcon}).addTo(map);
-         currentLocMarker.bindPopup("current photo");
-
-         for(n=0; n<tracks.length; n++) {
-             L.geoJson(tracks[n], {style: {color: tab10[n], weight: 3, opacity: 1}}).addTo(map);
-         }
-
-         function updateMapInset(lat, lon) {
-             currentLocMarker.setLatLng([lat, lon]);
-
-             // center map on this point, but only if it's not already close to the center
-             bounds = map.getBounds();
-             // center = map.getCenter();
-             xnorm = (lon - bounds._northEast["lng"])/(bounds._southWest["lng"] - bounds._northEast["lng"])
-             ynorm = (lat - bounds._southWest["lat"])/(bounds._northEast["lat"] - bounds._southWest["lat"])
-             if (xnorm < .25 || xnorm > .75 || ynorm < .25 || ynorm > .75) {
-                 map.flyTo([lat, lon], map.getZoom());
-             }
-
-         }
-
-         updateMapInset(35.822, -105.69);
-
-
-         // attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-         // Campground by Vicons Design from the Noun Project
-         // Spork by Matt Garbarino from the Noun Project
-
-         $("#lightgallery").on('onBeforeSlide.lg', function(event, prevIndex, index){
-             //$('.lg-outer').css('background-color', colours[index])
-             console.log(event, prevIndex, index)
-             slide=$("#slide" + index)[0]
-             console.log(slide)
-             lat = parseFloat(slide.attributes["data-lat"].value)
-             lon = parseFloat(slide.attributes["data-lon"].value)
-             console.log(slide, lat, lon)
-             updateMapInset(lat, lon)
-         });
-
-         $("#lightgallery").on('onAfterOpen.lg',function(event, index, fromTouch, fromThumb){
-             console.log("onAfterOpen")
-         });
-
-        </script>
+        <script src="../js/main.js"></script>
     </body>
 </html>
