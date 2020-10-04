@@ -1,6 +1,16 @@
+this is a loose set of scripts that i use to generate a static website to present a slideshow of outdoorsy trip photos and GPS tracks.
+
+it's based on a basic gallery app called [[https://sachinchoolur.github.io/lightGallery/][lightgallery]], which supports photos, gifs, and videos (and also iframes i guess).
+
+a map inset is provided by [[https://leafletjs.com/][leaflet]], which shows the location of the current photo, GPS tracks, waypoints, and other map annotations.
+
+the outstanding missing feature is a separate inset for an elevation profile, with an indicator for the current photo.
+
+[[./screenshot.png]]
+
 * process
 
-1. ~mkdir my-trip && mkdir my-trip/{img,img-thumb,video,video-poster,video-thumb,gps}~
+1. ~mkdir -p my-trip/{img,img-thumb,video,video-poster,video-thumb,gps}~
 2. get photos in order
    - copy photos into ~my-trip/img~
    - ensure all photo timestamps and/or timestamp filenames are correct. 
@@ -18,11 +28,13 @@
      - by frame: ~ffmpeg -i VID_20200902_193614.mp4 -vframes 1 VID_20200902_193614.jpeg~
      - by timestamp: ~ffmpeg -i VID_20200902_193614.mp4 -ss 00:09 VID_20200902_193614.jpeg~
    - use ~convert~ to generate thumbnails from the posters
-4. run ~scripts/generate-metadata.py~
+4. copy tracks to ~my-trip/gps/*.gpx~ or maybe ~*.json~
+5. run ~scripts/generate-metadata.py~
    - update/add new device-specific sections to the ~get_details~ function (TODO: switch behavior based on hardware name in exif tag - possibly unreliable)
-5. add comments to the metadata file (TODO pull from exif and/or load from a separate ~comments.csv~ file or something)
-6. run ~scripts/generate-html.py~
-7. move resulting file to ~my-trip/index.html~
+   - (TODO: use tracks to interpolate position & elevation for each photo)
+6. add comments to the metadata file (TODO pull from exif and/or load from a separate ~comments.csv~ file or something)
+7. run ~scripts/generate-html.py~. this is a separate script because metadata often requires some manual cleaning.
+8. move resulting file to ~my-trip/index.html~
 
 also:
 - add any new icons
@@ -30,6 +42,8 @@ also:
   - TODO: move to GeoJSON and load from server? might not make sense, not sure if all the data these need to contain make sense to put into GeoJSON
 - copy track GeoJSON *contents* to ~my-trip/gps/tracks.js~
   - TODO: load the GeoJSON files directly from the server
+
+see the ~sample-trip~ directory for an example directory structure showing where to put images, videos, and map data.
 
 * data munging commands
 
