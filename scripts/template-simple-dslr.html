@@ -1,0 +1,36 @@
+<meta charset="UTF-8">
+<html>
+    <head>
+        <title>{{ title }}</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+        <link type="text/css" rel="stylesheet" href="../css/main.css" />
+        <!-- lightgallery -->
+        <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/css/lightgallery.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/js/lightgallery.min.js"></script>
+
+        <!-- lightgallery plugins -->
+        <script src="../js/lg-thumbnail.js"></script>
+        <script src="../js/lg-fullscreen.js"></script>
+        <script src="../js/lg-autoplay.js"></script>
+        <script src="../js/lg-hash.js"></script>
+        <script src="../js/lg-zoom.js"></script>
+
+    </head>
+    <body>
+
+        <!-- slides -->
+        <div id="lightgallery">
+
+            {%- for item in metadata %}
+            {%- if item.type == "image" %}
+            <a href="img/{{ item.basename }}"  data-sub-html="{{ item.caption }}" class="p1" id="slide{{ loop.index-1 }}">
+                <img src="img-thumb/{{ item.basename }}">
+            </a>
+            {%- endif %}
+            {%- endfor %}
+        </div>
+
+        <script src="../js/main.js"></script>
+    </body>
+</html>
