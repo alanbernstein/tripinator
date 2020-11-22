@@ -10,6 +10,16 @@ the outstanding missing feature is a separate inset for an elevation profile, wi
 
 * process
 
+** simple DSLR photos template
+
+to create a simple photo gallery, from a directory of DSLR photos, using ~template-simple-dslr.html~
+
+1. get photos in order. exif tag CreateDate is used, ensure this is accurate on all photos
+2. run ~make_gallery_assets.sh~ (modify path first) - this creates thumbnails
+3. run ~main.py~ (modify path first) - this creates the HTML page in one step, assuming no captions are needed
+
+** trip template
+
 1. ~mkdir -p my-trip/{img,img-thumb,video,video-poster,video-thumb,gps}~
 2. get photos in order
    - copy photos into ~my-trip/img~
