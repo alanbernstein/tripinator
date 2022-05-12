@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ metadata.title }}</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+        <link type="text/css" rel="stylesheet" href="../css/main.css" />
+        <link type="text/css" rel="stylesheet" href="../css/multigallery.css" />
+        <!-- lightgallery -->
+        <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/css/lightgallery.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.8.3/dist/js/lightgallery.min.js"></script>
+
+        <!-- lightgallery plugins -->
+        <script src="../js/lg-thumbnail.js"></script>
+        <script src="../js/lg-fullscreen.js"></script>
+        <script src="../js/lg-video.js"></script>
+        <script src="../js/lg-autoplay.js"></script>
+        <script src="../js/lg-hash.js"></script>
+        <script src="../js/lg-zoom.js"></script>
+
+        <!-- video player -->
+        <link href="http://vjs.zencdn.net/4.12/video-js.css" rel="stylesheet">
+        <script src="http://vjs.zencdn.net/4.12/video.js"></script>
+
+    </head>
+    <body>
+
+        <!-- template-multigallery.html -->
+
+        <h2>{{ metadata.header }}</h2>
+        {{ metadata.summary }}
+
+
+        <!-- video content -->
+        {%- set vars = {'slide_id': 0} %}
+        {%- for subgallery in metadata.subgalleries %}
+          {%- for item in subgallery.itemz %}
+            {%- if item.type == "video" %}
+              <div style="display:none;" id="video{{ vars.slide_id }}">
+                <video class="lg-video-object lg-html5" controls preload="none">
+                  <source src="video/{{ item.basename }}" type="video/mp4">
+                  Your browser does not support HTML5 video.
+                </video>
+              </div>
+              {%- endif %}
+              {%- if vars.update({'slide_id': vars.slide_id + 1}) %} {% endif %}
+          {%- endfor %}
+        {%- endfor %}
+
+        <!-- filter by keyword -->
+
+        <!-- slides -->
+              <div id="lightgallery">
+                  {%- set vars = {'slide_id': 0} %}
+                  {%- for subgallery in metadata.subgalleries %}
+
+            <h3><a name="#{{ subgallery.slug }}">{{ subgallery.title }}</a></h3>
+            <div class="info">{{ subgallery.date }} ◈ {{ subgallery.keywords }}</div>
+            <div class="summary">{{ subgallery.summary }} </div>
+            {%- for item in subgallery.itemz %}
+                {%- if item.type == "image" %}
+            <a href="{{ subgallery.path }}/img/{{ item.basename }}" data-sub-html="{{ item.caption }}" class="item p1" id="slide{{ vars.slide_id }}">
+                <img src="{{ subgallery.path }}/img-thumb/{{ item.basename }}">
+                  </a>
+                {%- elif item.type == "video" %}
+                  <a data-poster="video-poster/{{ item.poster_name }}" data-sub-html="{{ item.caption }}" data-html="#video{{ vars.slide_id }}" class="v1" id="slide{{ vars.slide_id }}">
+                      <img src="video-thumb/{{ item.thumbnail_name }}" />
+                  </a>
+                  {%- endif %}
+                  {%- if vars.update({'slide_id': vars.slide_id + 1}) %} {% endif %} {# scoping kludge to increment a variable in a nested loop #}
+                  {%- endfor %}
+            {%- endfor %}
+        </div>
+
+        <script src="../js/multigallery.js"></script>
+    </body>
+</html>
