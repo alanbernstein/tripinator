@@ -26,7 +26,7 @@
             {%- for item in metadata %}
             {%- if item.type == "image" %}
             <a href="img/{{ item.basename }}"  data-sub-html="{{ item.caption }}" class="p1" id="slide{{ loop.index-1 }}">
-                <img src="img-thumb/{{ item.basename }}">
+                <img loading="lazy" src="img-thumb/{{ item.basename }}">
             </a>
             {%- endif %}
             {%- endfor %}

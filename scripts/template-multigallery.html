@@ -61,7 +61,7 @@
             {%- for item in subgallery.itemz %}
                 {%- if item.type == "image" %}
             <a href="{{ subgallery.path }}/img/{{ item.basename }}" data-sub-html="{{ item.caption }}" class="item p1" id="slide{{ vars.slide_id }}">
-                <img src="{{ subgallery.path }}/img-thumb/{{ item.basename }}">
+                <img loading="lazy" src="{{ subgallery.path }}/img-thumb/{{ item.basename }}">
                   </a>
                 {%- elif item.type == "video" %}
                   <a data-poster="video-poster/{{ item.poster_name }}" data-sub-html="{{ item.caption }}" data-html="#video{{ vars.slide_id }}" class="v1" id="slide{{ vars.slide_id }}">

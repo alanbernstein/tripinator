@@ -19,7 +19,7 @@
     {%- elif item.type == "video" %}
     <!-- extension wrong here -->
     <a data-poster="video-poster/{{ item.basename }}.png" data-sub-html="video caption1" data-html="#video1" class="v1"  id="slide{{ item.video_id }}" data-lat="" data-lon="">
-      <img src="video-poster/{{ item.basename }}.png" />
+        <img loading="lazy" src="video-poster/{{ item.basename }}.png" />
     </a>
   {%- endif %}
 {%- endfor %}

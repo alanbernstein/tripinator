@@ -51,7 +51,7 @@
             {%- for item in metadata %}
             {%- if item.type == "image" %}
             <a href="img/{{ item.basename }}"  data-sub-html="{{ item.caption }}" class="p1" id="slide{{ loop.index-1 }}" data-lat="{{ item.lat }}" data-lon="{{ item.lon }}">
-                <img src="img-thumb/{{ item.thumbnail_name }}">
+                <img loading="lazy" src="img-thumb/{{ item.thumbnail_name }}">
             </a>
             {%- elif item.type == "video" %}
             <a data-poster="video-poster/{{ item.poster_name }}" data-sub-html="{{ item.caption }}" data-html="#video{{ loop.index-1 }}" class="v1" id="slide{{ loop.index-1 }}" data-lat="{{ item.lat }}" data-lon="{{ item.lon }}">
