@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+/* ── Reset & base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #1e1e1e;
+  --surface:   #262626;
+  --text:      #e0ddd8;
+  --muted:     #888;
+  --accent:    #c0392b;
+  --border:    #383838;
+  --sidebar-w: 400px;
+  --content-max: 740px;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans:  'Inter', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Page header ─────────────────────────────────────── */
+.trip-header {
+  padding: 3.5rem 2.5rem 3rem;
+  max-width: var(--content-max);
+  border-bottom: 1px solid var(--border);
+}
+.trip-header h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.trip-header .trip-meta {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+}
+
+/* ── Two-column layout ───────────────────────────────── */
+.trip-layout {
+  display: grid;
+  grid-template-columns: 1fr var(--sidebar-w);
+  min-height: 100vh;
+  align-items: start;
+}
+
+/* ── Content column ──────────────────────────────────── */
+.trip-content {
+  padding: 0 2.5rem 6rem;
+  max-width: var(--content-max);
+}
+
+/* ── Day sections ────────────────────────────────────── */
+.day-section {
+  margin-top: 4rem;
+}
+.day-section:first-child { margin-top: 2.5rem; }
+
+.day-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--text);
+  margin-bottom: 2rem;
+}
+.day-header h2 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.day-count {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+/* ── Photo items ─────────────────────────────────────── */
+.photo-item {
+  margin-bottom: 2.25rem;
+  display: block;
+}
+
+/* Portrait: narrower, centered */
+.photo-item.is-portrait {
+  max-width: 65%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Panorama: full bleed with subtle overflow */
+.photo-item.is-pano img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  object-position: center;
+  cursor: zoom-in;
+}
+
+.photo-link {
+  display: block;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: 2px;
+  position: relative;
+}
+
+.photo-link img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: opacity 0.2s;
+}
+.photo-link:hover img { opacity: 0.85; }
+
+.trip-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+  background: #000;
+}
+
+.photo-caption {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--text);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+.photo-meta {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+  letter-spacing: 0.02em;
+}
+
+.photo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.45rem;
+}
+.tag-chip {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.1rem 0.55rem;
+  letter-spacing: 0.03em;
+}
+
+/* ── Tag filter (sidebar) ─────────────────────────────────────────── */
+.tag-filter-section {
+  flex: 0 0 auto;
+  padding: 0.65rem 1rem 0.75rem;
+  border-top: 1px solid var(--border);
+}
+.tag-filter-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  margin-bottom: 0.5rem;
+}
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.filter-chip {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+  letter-spacing: 0.02em;
+}
+.filter-chip:hover { border-color: var(--text); color: var(--text); }
+.filter-chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.filter-clear {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.filter-clear.hidden { display: none; }
+
+/* ── Sidebar ─────────────────────────────────────────── */
+.trip-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#map {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.elevation-wrap {
+  flex: 0 0 auto;
+  padding: 0.75rem 1rem 0.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.elevation-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  font-family: var(--font-sans);
+}
+#elevation-canvas {
+  display: block;
+  width: 100%;
+  height: 64px;
+  cursor: default;
+}
+
+.sidebar-footer {
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-sans);
+}
+
+/* ── Lightbox ────────────────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.lightbox.hidden { display: none; }
+
+.lb-image-wrap {
+  max-width: 90vw;
+  max-height: 85vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#lb-img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  display: block;
+}
+#lb-caption {
+  color: rgba(255,255,255,0.75);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  text-align: center;
+  max-width: 60ch;
+}
+#lb-meta {
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  margin-top: 0.35rem;
+  letter-spacing: 0.04em;
+}
+
+.lb-btn {
+  position: fixed;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 2.5rem;
+  cursor: pointer;
+  padding: 1rem;
+  transition: color 0.15s;
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+.lb-btn:hover { color: #fff; }
+#lb-close { top: 1rem; right: 1rem; transform: none; font-size: 1.8rem; }
+#lb-prev { left: 0.5rem; }
+#lb-next { right: 0.5rem; }
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .trip-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  .trip-sidebar {
+    position: sticky;
+    top: 0;
+    height: 240px;
+    z-index: 100;
+    flex-direction: row;
+    border-left: none;
+    border-bottom: 1px solid var(--border);
+  }
+  #map { flex: 1 1 auto; }
+  .elevation-wrap { flex: 0 0 120px; border-top: none; border-left: 1px solid var(--border); }
+  #elevation-canvas { height: 100%; }
+  .sidebar-footer { display: none; }
+  .trip-content { padding: 0 1.25rem 4rem; max-width: 100%; }
+  .trip-header { padding: 2rem 1.25rem 1.5rem; max-width: 100%; }
+  .photo-item.is-portrait { max-width: 85%; }
+}
+</style>
+</head>
+<body>
+
+<header class="trip-header">
+  <h1>{{ title }}</h1>
+  <div class="trip-meta">{{ item_count }} photos</div>
+</header>
+
+<div class="trip-layout">
+
+  <!-- Scrolling content -->
+  <main class="trip-content">
+    {% set ns = namespace(idx=0) %}
+    {% for day in days %}
+    <section class="day-section">
+      <div class="day-header">
+        <h2>{{ day.label }}</h2>
+        <span class="day-count">{{ day.photos|length }} item{% if day.photos|length != 1 %}s{% endif %}</span>
+      </div>
+
+      {% for item in day.photos %}
+      <figure class="photo-item{% if item.is_portrait %} is-portrait{% elif item.is_pano %} is-pano{% endif %}"
+              {% if item.lat is not none %}data-lat="{{ item.lat }}" data-lon="{{ item.lon }}"{% endif %}
+              data-id="{{ ns.idx }}"
+              data-tags='{{ item.tags | tojson }}'>
+        {% if item.type == 'video' %}
+        <video class="trip-video"
+               poster="video-poster/{{ item.poster }}"
+               preload="none"
+               controls
+               playsinline>
+          <source src="video/{{ item.filename }}" type="video/mp4">
+        </video>
+        {% else %}
+        <a href="img/{{ item.filename }}" class="photo-link" data-index="{{ ns.idx }}">
+          <img src="img-thumb/{{ item.filename }}"
+               loading="lazy"
+               width="{{ item.aspect > 1 and 1200 or 900 }}"
+               height="{{ item.aspect > 1 and 900 or 1200 }}"
+               alt="{{ item.caption or '' }}">
+        </a>
+        {% endif %}
+        {% if item.caption %}
+        <figcaption class="photo-caption">{{ item.caption }}</figcaption>
+        {% endif %}
+        <div class="photo-meta">
+          {{ item.time_str }}{% if item.ele_ft %} &nbsp;·&nbsp; {{ item.ele_ft }} ft{% endif %}
+        </div>
+        {% if item.tags %}
+        <div class="photo-tags">
+          {% for tag in item.tags %}<span class="tag-chip">{{ tag }}</span>{% endfor %}
+        </div>
+        {% endif %}
+      </figure>
+      {% set ns.idx = ns.idx + 1 %}
+      {% endfor %}
+    </section>
+    {% endfor %}
+  </main>
+
+  <!-- Sticky sidebar -->
+  <aside class="trip-sidebar">
+    <div id="map"></div>
+    <div class="elevation-wrap">
+      <div class="elevation-label">Elevation</div>
+      <canvas id="elevation-canvas"></canvas>
+    </div>
+    <div class="tag-filter-section" id="tag-filter-section" style="display:none">
+      <div class="tag-filter-label">Filter by tag</div>
+      <div class="filter-chips" id="filter-chips"></div>
+      <button class="filter-clear hidden" id="filter-clear">Clear filter</button>
+    </div>
+    <div class="sidebar-footer">
+      Map © <a href="https://www.openstreetmap.org/copyright" style="color:inherit">OpenStreetMap</a> contributors
+    </div>
+  </aside>
+
+</div><!-- .trip-layout -->
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true">
+  <button class="lb-btn" id="lb-close" aria-label="Close">✕</button>
+  <button class="lb-btn" id="lb-prev" aria-label="Previous">&#8249;</button>
+  <button class="lb-btn" id="lb-next" aria-label="Next">&#8250;</button>
+  <div class="lb-image-wrap">
+    <img id="lb-img" src="" alt="">
+    <video id="lb-video" controls playsinline style="display:none; max-width:90vw; max-height:85vh; background:#000;"></video>
+  </div>
+  <div id="lb-caption"></div>
+  <div id="lb-meta"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const TRACKS     = {{ tracks_json }};
+const ITEMS      = {{ items_json }};
+const MAP_CENTER = {{ map_center }};
+const ALL_TAGS   = {{ all_tags_json }};
+
+// ── Track colors ──────────────────────────────────────────────────────────────
+const TRACK_COLORS = ['#27c96b', '#3a8fd4', '#e91e8c'];  // green, blue, magenta
+
+// ── Map ───────────────────────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true, attributionControl: false })
+  .setView(MAP_CENTER, 13);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  maxZoom: 19,
+}).addTo(map);
+// Darken the Voyager tiles: keeps city features and color, but reads as dark
+map.getPanes().tilePane.style.filter = 'brightness(0.5) contrast(1.2)';
+
+// Draw GPS tracks with white halo for contrast, store refs for highlighting
+const trackPolylines = [];
+TRACKS.forEach((feature, i) => {
+  const latlngs = feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+  const color = TRACK_COLORS[i % TRACK_COLORS.length];
+  const halo = L.polyline(latlngs, {
+    color: 'white', weight: 7, opacity: 0.55, lineJoin: 'round', lineCap: 'round',
+  }).addTo(map);
+  const line = L.polyline(latlngs, {
+    color, weight: 2.5, opacity: 0.75, lineJoin: 'round', lineCap: 'round',
+  }).addTo(map);
+  trackPolylines.push({ halo, line, color });
+});
+
+function setActiveTrack(trackIdx) {
+  trackPolylines.forEach(({ halo, line }, i) => {
+    const active = (i === trackIdx);
+    halo.setStyle({ weight: active ? 10 : 6, opacity: active ? 0.65 : 0.4 });
+    line.setStyle({ weight: active ? 4.5 : 2.5, opacity: active ? 1 : 0.65 });
+    if (active) { halo.bringToFront(); line.bringToFront(); }
+  });
+}
+
+// Fit map to track bounds (or photo bounds)
+const allLatLngs = TRACKS.flatMap(f =>
+  f.geometry.coordinates.map(([lon, lat]) => [lat, lon])
+);
+if (allLatLngs.length > 1) {
+  map.fitBounds(allLatLngs, { padding: [24, 24] });
+}
+
+// Current-position marker
+const posMarker = L.circleMarker(MAP_CENTER, {
+  radius: 7,
+  fillColor: '#c0392b',
+  color: '#ffffff',
+  weight: 2.5,
+  fillOpacity: 1,
+  zIndexOffset: 1000,
+}).addTo(map);
+
+let currentLat = null, currentLon = null;
+
+function updateMapPos(lat, lon, trackIdx) {
+  if (lat === null || lon === null) return;
+  if (lat === currentLat && lon === currentLon) return;
+  currentLat = lat; currentLon = lon;
+  posMarker.setLatLng([lat, lon]);
+  if (!map.getBounds().contains([lat, lon])) {
+    map.panTo([lat, lon], { animate: true, duration: 0.4 });
+  }
+  if (trackIdx !== undefined) setActiveTrack(trackIdx);
+  posMarker.bringToFront();  // keep above tracks after bringToFront calls
+  drawElevationCursor(lat, lon);
+}
+
+// ── Elevation profile ─────────────────────────────────────────────────────────
+const canvas = document.getElementById('elevation-canvas');
+const ctx    = canvas.getContext('2d');
+
+// Build flat array of {lat, lon, ele, cumDist} from all tracks
+let elevPoints = [];
+let cumDist = 0;
+TRACKS.forEach(feature => {
+  const coords = feature.geometry.coordinates; // [lon, lat, ele]
+  coords.forEach((c, i) => {
+    if (i > 0) {
+      const prev = coords[i - 1];
+      const dlat = (c[1] - prev[1]) * 111319;
+      const dlon = (c[0] - prev[0]) * 111319 * Math.cos(c[1] * Math.PI / 180);
+      cumDist += Math.sqrt(dlat * dlat + dlon * dlon);
+    }
+    elevPoints.push({ lat: c[1], lon: c[0], ele: c[2], dist: cumDist });
+  });
+});
+
+function drawElevationProfile() {
+  const W = canvas.offsetWidth || canvas.parentElement.offsetWidth || 360;
+  const H = canvas.offsetHeight || 64;
+  canvas.width  = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  if (elevPoints.length < 2) return;
+
+  const totalDist = elevPoints[elevPoints.length - 1].dist;
+  const eles = elevPoints.map(p => p.ele);
+  const minEle = Math.min(...eles);
+  const maxEle = Math.max(...eles);
+  const eleRange = maxEle - minEle || 1;
+
+  const pad = { t: 6, b: 6, l: 0, r: 0 };
+  const W2 = W - pad.l - pad.r;
+  const H2 = H - pad.t - pad.b;
+
+  function toX(dist) { return pad.l + (dist / totalDist) * W2; }
+  function toY(ele)  { return pad.t + H2 - ((ele - minEle) / eleRange) * H2; }
+
+  // Filled area
+  ctx.beginPath();
+  ctx.moveTo(toX(elevPoints[0].dist), H - pad.b);
+  elevPoints.forEach(p => ctx.lineTo(toX(p.dist), toY(p.ele)));
+  ctx.lineTo(toX(elevPoints[elevPoints.length - 1].dist), H - pad.b);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(90, 130, 180, 0.18)';
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  elevPoints.forEach((p, i) => {
+    i === 0 ? ctx.moveTo(toX(p.dist), toY(p.ele))
+            : ctx.lineTo(toX(p.dist), toY(p.ele));
+  });
+  ctx.strokeStyle = 'rgba(90, 130, 180, 0.7)';
+  ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Store drawing params for cursor
+  canvas._drawParams = { totalDist, minEle, eleRange, W, H, pad, W2, H2, toX, toY };
+}
+
+function drawElevationCursor(lat, lon) {
+  if (!canvas._drawParams || elevPoints.length < 2) return;
+  const { totalDist, W, H } = canvas._drawParams;
+
+  // Find nearest point
+  let nearest = null, bestDist2 = Infinity;
+  elevPoints.forEach(p => {
+    const d2 = (p.lat - lat) ** 2 + (p.lon - lon) ** 2;
+    if (d2 < bestDist2) { bestDist2 = d2; nearest = p; }
+  });
+  if (!nearest) return;
+
+  drawElevationProfile();
+  const x = canvas._drawParams.toX(nearest.dist);
+  const y = canvas._drawParams.toY(nearest.ele);
+
+  ctx.beginPath();
+  ctx.moveTo(x, 0);
+  ctx.lineTo(x, H);
+  ctx.strokeStyle = 'rgba(192, 57, 43, 0.4)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#c0392b';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+// Draw on load and on resize
+window.addEventListener('load', drawElevationProfile);
+window.addEventListener('resize', drawElevationProfile);
+
+// ── Tag filter ────────────────────────────────────────────────────────────────
+const activeTags = new Set();
+const allPhotoItems = Array.from(document.querySelectorAll('.photo-item'));
+
+function applyFilter() {
+  allPhotoItems.forEach(el => {
+    const tags = JSON.parse(el.dataset.tags || '[]');
+    const show = activeTags.size === 0 || [...activeTags].some(t => tags.includes(t));
+    el.style.display = show ? '' : 'none';
+  });
+  // Hide day sections where every item is filtered out
+  document.querySelectorAll('.day-section').forEach(section => {
+    const anyVisible = [...section.querySelectorAll('.photo-item')]
+      .some(el => el.style.display !== 'none');
+    section.style.display = anyVisible ? '' : 'none';
+  });
+  document.getElementById('filter-clear')
+    .classList.toggle('hidden', activeTags.size === 0);
+}
+
+if (ALL_TAGS.length > 0) {
+  document.getElementById('tag-filter-section').style.display = '';
+  const chipsEl = document.getElementById('filter-chips');
+  ALL_TAGS.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-chip';
+    btn.textContent = tag;
+    btn.addEventListener('click', () => {
+      if (activeTags.has(tag)) { activeTags.delete(tag); btn.classList.remove('active'); }
+      else                     { activeTags.add(tag);    btn.classList.add('active'); }
+      applyFilter();
+    });
+    chipsEl.appendChild(btn);
+  });
+  document.getElementById('filter-clear').addEventListener('click', () => {
+    activeTags.clear();
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    applyFilter();
+  });
+}
+
+// ── Scroll-based photo tracking ───────────────────────────────────────────────
+// Find whichever photo's center is closest to the viewport center — reliable
+// in both directions regardless of photo size, unlike IntersectionObserver.
+let activePhotoId = 0;
+let scrollLock = false;
+let scrollLockTimer = null;
+let rafPending = false;
+
+const gpsPhotoEls = Array.from(document.querySelectorAll('.photo-item[data-lat]'));
+
+function updateActivePhoto() {
+  if (scrollLock || gpsPhotoEls.length === 0) return;
+  const mid = window.innerHeight / 2;
+  let best = null, bestDist = Infinity;
+  gpsPhotoEls.forEach(el => {
+    if (el.style.display === 'none') return;
+    const r = el.getBoundingClientRect();
+    const dist = Math.abs((r.top + r.bottom) / 2 - mid);
+    if (dist < bestDist) { bestDist = dist; best = el; }
+  });
+  if (!best) return;
+  const id = parseInt(best.dataset.id);
+  if (id === activePhotoId && currentLat !== null) return;
+  activePhotoId = id;
+  const lat = parseFloat(best.dataset.lat);
+  const lon = parseFloat(best.dataset.lon);
+  if (!isNaN(lat) && !isNaN(lon)) {
+    const item = ITEMS[id];
+    updateMapPos(lat, lon, item ? item.track_idx : -1);
+  }
+}
+
+window.addEventListener('scroll', () => {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => { rafPending = false; updateActivePhoto(); });
+}, { passive: true });
+
+// Set initial position once map tiles have loaded
+map.once('load', updateActivePhoto);
+window.addEventListener('load', updateActivePhoto);
+
+// ── Lightbox ──────────────────────────────────────────────────────────────────
+const lightbox = document.getElementById('lightbox');
+const lbImg    = document.getElementById('lb-img');
+const lbVideo  = document.getElementById('lb-video');
+const lbCap    = document.getElementById('lb-caption');
+const lbMeta   = document.getElementById('lb-meta');
+let lbIndex = 0;
+
+function openLightbox(index) {
+  lbIndex = ((index % ITEMS.length) + ITEMS.length) % ITEMS.length;
+  const item = ITEMS[lbIndex];
+
+  if (item.type === 'video') {
+    lbImg.style.display = 'none';
+    lbVideo.style.display = 'block';
+    lbVideo.src = 'video/' + item.filename;
+    lbVideo.poster = 'video-poster/' + item.poster;
+    lbVideo.load();
+  } else {
+    lbVideo.pause();
+    lbVideo.removeAttribute('src');
+    lbVideo.style.display = 'none';
+    lbImg.style.display = 'block';
+    lbImg.src = 'img/' + item.filename;
+    lbImg.alt = item.caption || '';
+  }
+
+  lbCap.textContent = item.caption || '';
+  const meta = [item.time, item.ele_ft ? item.ele_ft + ' ft' : ''].filter(Boolean).join(' · ');
+  lbMeta.textContent = meta;
+  lightbox.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lbVideo.pause();
+  lbVideo.removeAttribute('src');
+  lbVideo.style.display = 'none';
+  lbImg.style.display = 'block';
+  lightbox.classList.add('hidden');
+  document.body.style.overflow = '';
+  lbImg.src = '';
+}
+
+const photoLinks = Array.from(document.querySelectorAll('.photo-link'));
+
+photoLinks.forEach((link, i) => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    openLightbox(parseInt(link.dataset.index));
+  });
+});
+
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', () => openLightbox(lbIndex - 1));
+document.getElementById('lb-next').addEventListener('click', () => openLightbox(lbIndex + 1));
+
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('hidden')) {
+    // Lightbox: arrow keys navigate photos
+    if (e.key === 'Escape')      closeLightbox();
+    if (e.key === 'ArrowLeft')   openLightbox(lbIndex - 1);
+    if (e.key === 'ArrowRight')  openLightbox(lbIndex + 1);
+    return;
+  }
+  // Main view: arrow keys scroll to prev/next photo
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const delta = e.key === 'ArrowRight' ? 1 : -1;
+    // Navigate within visible items only (respects tag filter)
+    const visible = allPhotoItems.filter(el => el.style.display !== 'none');
+    if (visible.length === 0) return;
+    const currentEl = document.querySelector(`.photo-item[data-id="${activePhotoId}"]`);
+    let idx = visible.indexOf(currentEl);
+    if (idx === -1) idx = delta > 0 ? -1 : visible.length;
+    const newEl = visible[Math.max(0, Math.min(visible.length - 1, idx + delta))];
+    if (newEl) {
+      scrollLock = true;
+      clearTimeout(scrollLockTimer);
+      activePhotoId = parseInt(newEl.dataset.id);
+      newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollLockTimer = setTimeout(() => { scrollLock = false; }, 700);
+      const item = ITEMS[activePhotoId];
+      if (item && item.lat !== null) updateMapPos(item.lat, item.lon, item.track_idx);
+    }
+  }
+});
+</script>
+</body>
+</html>

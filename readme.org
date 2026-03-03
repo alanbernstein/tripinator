@@ -8,6 +8,10 @@ the outstanding missing feature is a separate inset for an elevation profile, wi
 
 [[./screenshot.png]]
 
+* inspiration
+- https://walkkumano.com/koyabound/
+- https://news.ycombinator.com/item?id=42926359
+
 * process
 
 ** simple DSLR photos template
